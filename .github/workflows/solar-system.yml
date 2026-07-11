@@ -55,5 +55,32 @@ jobs:
             name: Code-Coverage-Result
             path: coverage
             retention-days: 5
+      docker:
+        runs-on: ubuntu-latest
+        needs:
+          - code-converage
+          - unit-testing
+        steps:
+          - uses: actions/checkout@v4
+          - name: Log in to GHCR
+            uses: docker/login-action@v3
+            with:
+              registry: ghcr.io
+              username: ${{ github.repository_owner }}
+              password: ${{ secrets.GITHUB_TOKEN }}
+          - name: Convert Repo Name to Lowercase
+            id: lower
+            run: |
+             echo "repo=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]') >> $GITHUB_OUTPUT"
+          - name: Build Docker and push
+            uses: docker/build-push-action@v6
+            with:
+              context: .
+              push: true
+              tags: ghcr.io/${{steps.lower.output.repo}}/solar-system:${{github.sha}}
+      dev-deploy:
+        runs-on: ubuntu-latest
+        
+
 
 
