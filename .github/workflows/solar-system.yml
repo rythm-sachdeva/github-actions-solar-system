@@ -45,7 +45,7 @@ jobs:
           with:
             node-version: 18
         
-        - uses: npm install
+        - run: npm install
 
         - continue-on-error: true
           run: npm run coverage
